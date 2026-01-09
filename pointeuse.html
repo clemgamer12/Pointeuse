@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>WorkTime Pro</title>
+    <style>
+        :root {
+            --ios-blue: #007AFF;
+            --ios-green: #34C759;
+            --ios-red: #FF3B30;
+            --ios-orange: #FF9500;
+            --ios-gray: #8E8E93;
+            --ios-bg: #F2F2F7;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--ios-bg);
+            color: #000;
+            padding: env(safe-area-inset-top) 16px 40px;
+        }
+
+        /* --- DASHBOARD --- */
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .header-section { text-align: center; margin-bottom: 25px; }
+        #live-time { font-size: 52px; font-weight: 800; letter-spacing: -2px; color: #1c1c1e; }
+        #live-date { font-size: 17px; color: var(--ios-gray); margin-top: -5px; }
+
+        /* --- STATS GRID --- */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .stat-box { background: #F8F8FA; padding: 15px; border-radius: 15px; border: 1px solid #E5E5EA; }
+        .stat-label { font-size: 11px; font-weight: 600; color: var(--ios-gray); text-transform: uppercase; margin-bottom: 4px; }
+        .stat-value { font-size: 19px; font-weight: 700; color: var(--ios-blue); }
+
+        /* --- BUTTONS --- */
+        .main-actions { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .btn {
+            border: none; border-radius: 14px; padding: 18px;
+            font-size: 17px; font-weight: 600; cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn:active { transform: scale(0.96); opacity: 0.8; }
+        
+        .btn-start { background: var(--ios-green); color: white; }
+        .btn-pause { background: var(--ios-orange); color: white; }
+        .btn-stop { background: var(--ios-red); color: white; }
+        .btn-secondary { background: #E5E5EA; color: #000; font-size: 14px; padding: 12px; }
+
+        /* --- HISTORY LIST --- */
+        .history-list { margin-top: 8px; }
+        .history-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 0; border-bottom: 0.5px solid #D1D1D6;
+        }
+        .history-item:last-child { border: none; }
+        .hist-main { font-weight: 600; font-size: 16px; }
+        .hist-sub { font-size: 13px; color: var(--ios-gray); }
+        .hist-right { text-align: right; }
+        .hist-total { font-weight: 700; color: var(--ios-blue); }
+
+        /* --- MODAL --- */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center; z-index: 1000;
+        }
+        .modal-body { width: 90%; max-width: 380px; }
+        input { 
+            width: 100%; padding: 14px; margin: 8px 0 16px; border: 1px solid #D1D1D6; 
+            border-radius: 12px; font-size: 16px; background: #FFF;
+        }
+
+        .badge-overtime { font-size: 10px; background: #E1F5FE; color: #0288D1; padding: 2px 6px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="header-section">
+        <div id="live-time">00:00</div>
+        <div id="live-date">Chargement...</div>
+    </div>
+
+    <div class="card">
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-label">Aujourd'hui (Net)</div>
+                <div id="today-total" class="stat-value">0h 00m</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Semaine</div>
+                <div id="week-total" class="stat-value">0h 00m</div>
+            </div>
+        </div>
+
+        <div class="main-actions" id="controls">
+            </div>
+    </div>
+
+    <div class="card" style="padding: 15px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="stat-label">Mois en cours</div>
+            <div id="month-total" style="font-weight: 700; color: var(--ios-gray);">0h</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+            <h3 style="font-size: 18px; font-weight: 700;">Sessions Récentes</h3>
+            <button class="btn-secondary" style="width: auto; padding: 5px 10px;" onclick="openManual()">+ Manuel</button>
+        </div>
+        <div id="history-list" class="history-list">
+            </div>
+    </div>
+
+    <div style="display: flex; gap: 10px;">
+        <button class="btn btn-secondary" style="flex: 1;" onclick="exportPro()">Exporter Rapport</button>
+        <button class="btn btn-secondary" style="flex: 1; color: var(--ios-red);" onclick="clearAll()">Réinitialiser</button>
+    </div>
+
+    <div id="manual-modal" class="modal">
+        <div class="card modal-body">
+            <h3 style="margin-bottom: 15px;">Session Manuelle</h3>
+            <label class="stat-label">Date</label>
+            <input type="date" id="m-date">
+            <label class="stat-label">Arrivée - Départ</label>
+            <div style="display: flex; gap: 10px;">
+                <input type="time" id="m-start">
+                <input type="time" id="m-end">
+            </div>
+            <label class="stat-label">Pause (minutes)</label>
+            <input type="number" id="m-pause" value="0">
+            <div class="main-actions">
+                <button class="btn btn-start" onclick="saveManual()">Enregistrer</button>
+                <button class="btn btn-secondary" onclick="closeManual()">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURATION
+        const DAILY_TARGET_MINS = 420; // 7 heures par jour cible
+
+        let state = {
+            active: JSON.parse(localStorage.getItem('pro_active')) || null,
+            history: JSON.parse(localStorage.getItem('pro_history')) || []
+        };
+
+        function save() {
+            localStorage.setItem('pro_active', JSON.stringify(state.active));
+            localStorage.setItem('pro_history', JSON.stringify(state.history));
+            render();
+        }
+
+        // --- ACTIONS ---
+        function punchIn() {
+            state.active = { start: new Date().toISOString(), pauses: [], isPaused: false };
+            save();
+        }
+
+        function togglePause() {
+            if (!state.active) return;
+            const now = new Date().toISOString();
+            if (!state.active.isPaused) {
+                state.active.pauses.push({ s: now, e: null });
+                state.active.isPaused = true;
+            } else {
+                state.active.pauses[state.active.pauses.length - 1].e = now;
+                state.active.isPaused = false;
+            }
+            save();
+        }
+
+        function punchOut() {
+            if (!state.active) return;
+            if (state.active.isPaused) togglePause();
+            
+            const end = new Date().toISOString();
+            const start = state.active.start;
+            const totalMs = new Date(end) - new Date(start);
+            
+            let pauseMs = 0;
+            state.active.pauses.forEach(p => { pauseMs += (new Date(p.e) - new Date(p.s)); });
+
+            const netMins = Math.round((totalMs - pauseMs) / 60000);
+            
+            state.history.unshift({
+                id: Date.now(),
+                start: start,
+                end: end,
+                netMins: netMins,
+                pauseMins: Math.round(pauseMs / 60000)
+            });
+
+            state.active = null;
+            save();
+        }
+
+        // --- UI RENDERING ---
+        function render() {
+            const controls = document.getElementById('controls');
+            
+            // BOUTONS DYNAMIQUES
+            if (!state.active) {
+                controls.innerHTML = `<button class="btn btn-start" onclick="punchIn()">▶ Pointer l'Arrivée</button>`;
+            } else {
+                controls.innerHTML = `
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-pause" style="flex: 2;" onclick="togglePause()">
+                            ${state.active.isPaused ? '⏯ Reprendre' : '⏸ Pause'}
+                        </button>
+                        <button class="btn btn-stop" style="flex: 1;" onclick="punchOut()">Terminer</button>
+                    </div>`;
+            }
+
+            // HISTORIQUE
+            const list = document.getElementById('history-list');
+            list.innerHTML = state.history.slice(0, 10).map(item => {
+                const date = new Date(item.start);
+                const isOvertime = item.netMins > DAILY_TARGET_MINS;
+                return `
+                    <div class="history-item">
+                        <div class="hist-info">
+                            <div class="hist-main">${date.toLocaleDateString('fr-FR', {day:'numeric', month:'short'})}</div>
+                            <div class="hist-sub">${formatTimeStr(item.start)} - ${formatTimeStr(item.end)}</div>
+                        </div>
+                        <div class="hist-right">
+                            <div class="hist-total">${formatMins(item.netMins)}</div>
+                            ${isOvertime ? `<span class="badge-overtime">+${formatMins(item.netMins - DAILY_TARGET_MINS)}</span>` : ''}
+                        </div>
+                    </div>`;
+            }).join('') || '<p style="text-align:center; color:gray; padding:20px;">Aucune donnée</p>';
+
+            updateStats();
+        }
+
+        function updateStats() {
+            const todayStr = new Date().toDateString();
+            
+            // Calcul aujourd'hui
+            let todayMins = state.history
+                .filter(i => new Date(i.start).toDateString() === todayStr)
+                .reduce((acc, curr) => acc + curr.netMins, 0);
+
+            // Ajout temps réel si actif
+            if (state.active && !state.active.isPaused) {
+                const live = Math.round((new Date() - new Date(state.active.start)) / 60000);
+                let pMs = 0;
+                state.active.pauses.forEach(p => { pMs += (new Date(p.e || new Date()) - new Date(p.s)); });
+                todayMins += (live - Math.round(pMs / 60000));
+            }
+
+            document.getElementById('today-total').innerText = formatMins(todayMins);
+            
+            // Calcul Semaine (Lundi-Dimanche)
+            const now = new Date();
+            const startOfWeek = new Date(now.setDate(now.getDate() - (now.getDay() || 7) + 1)).setHours(0,0,0,0);
+            const weekMins = state.history
+                .filter(i => new Date(i.start) >= startOfWeek)
+                .reduce((acc, curr) => acc + curr.netMins, 0);
+            document.getElementById('week-total').innerText = formatMins(weekMins);
+
+            // Calcul Mois
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+            const monthMins = state.history
+                .filter(i => new Date(i.start) >= startOfMonth)
+                .reduce((acc, curr) => acc + curr.netMins, 0);
+            document.getElementById('month-total').innerText = formatMins(monthMins);
+        }
+
+        // --- HELPERS ---
+        function formatMins(m) { return `${Math.floor(m / 60)}h ${String(m % 60).padStart(2, '0')}m`; }
+        function formatTimeStr(iso) { return new Date(iso).toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}); }
+
+        function tick() {
+            const now = new Date();
+            document.getElementById('live-time').innerText = now.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+            document.getElementById('live-date').innerText = now.toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long'});
+            if (state.active) updateStats();
+        }
+
+        function openManual() { document.getElementById('manual-modal').style.display = 'flex'; }
+        function closeManual() { document.getElementById('manual-modal').style.display = 'none'; }
+
+        function saveManual() {
+            const d = document.getElementById('m-date').value;
+            const s = document.getElementById('m-start').value;
+            const e = document.getElementById('m-end').value;
+            const p = parseInt(document.getElementById('m-pause').value) || 0;
+
+            if (!d || !s || !e) return alert("Veuillez remplir les heures.");
+
+            const start = new Date(`${d}T${s}`);
+            const end = new Date(`${d}T${e}`);
+            const net = Math.round((end - start) / 60000) - p;
+
+            if (net <= 0) return alert("L'heure de départ doit être après l'arrivée.");
+
+            state.history.unshift({ id: Date.now(), start: start.toISOString(), end: end.toISOString(), netMins: net, pauseMins: p });
+            save();
+            closeManual();
+        }
+
+        function exportPro() {
+            const csv = ["Date,Arrivee,Depart,Pause(min),Total Net"];
+            state.history.forEach(i => {
+                csv.push(`${new Date(i.start).toLocaleDateString()},${formatTimeStr(i.start)},${formatTimeStr(i.end)},${i.pauseMins},${formatMins(i.netMins)}`);
+            });
+            const blob = new Blob([csv.join("\n")], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', `Rapport_Heures_${new Date().getMonth()+1}.csv`);
+            a.click();
+        }
+
+        function clearAll() {
+            if (confirm("EFFACER TOUT L'HISTORIQUE ? Cette action est irréversible.")) {
+                state.history = [];
+                state.active = null;
+                save();
+            }
+        }
+
+        setInterval(tick, 1000);
+        tick();
+        render();
+    </script>
+</body>
+</html>
