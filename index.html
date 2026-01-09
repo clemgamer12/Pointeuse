@@ -3,7 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pointeuse</title>
+    <meta name="description" content="Application de pointage et gestion du temps de travail">
+    <meta name="theme-color" content="#9333ea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Pointeuse">
+    
+    <title>Pointeuse - Gestion du temps</title>
+    
+    <!-- Manifest PWA -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Icônes Apple -->
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    
     <style>
         * {
             margin: 0;
@@ -29,6 +42,124 @@
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             padding: 32px;
             margin-bottom: 24px;
+        }
+
+        /* Notification d'installation PWA */
+        .install-prompt {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 16px 24px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            display: none;
+            align-items: center;
+            gap: 16px;
+            z-index: 1000;
+            max-width: 90%;
+            animation: slideUp 0.3s ease;
+        }
+
+        .install-prompt.show {
+            display: flex;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateX(-50%) translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .install-prompt .icon {
+            font-size: 32px;
+        }
+
+        .install-prompt .content {
+            flex: 1;
+        }
+
+        .install-prompt .title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .install-prompt .description {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .install-prompt .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .install-prompt button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .install-prompt .btn-install {
+            background: #9333ea;
+            color: white;
+        }
+
+        .install-prompt .btn-dismiss {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        /* Indicateur de statut en ligne/hors ligne */
+        .network-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+
+        .network-status.online {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .network-status.offline {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .network-status .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .network-status.online .dot {
+            background: #10b981;
+        }
+
+        .network-status.offline .dot {
+            background: #ef4444;
         }
 
         .alert-warning {
@@ -625,7 +756,7 @@
 
         .section-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
             margin-bottom: 24px;
         }
@@ -743,6 +874,19 @@
             h3 {
                 font-size: 18px;
             }
+
+            .install-prompt {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .install-prompt .actions {
+                flex-direction: column;
+            }
+
+            .install-prompt button {
+                width: 100%;
+            }
         }
 
         @media (max-width: 480px) {
@@ -827,7 +971,6 @@
             }
         }
 
-        /* Pour les tablettes en mode paysage */
         @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
             .action-buttons {
                 flex-direction: row;
@@ -838,7 +981,6 @@
             }
         }
 
-        /* Support du mode sombre */
         @media (prefers-color-scheme: dark) {
             body {
                 background: linear-gradient(135deg, #581c87 0%, #312e81 100%);
@@ -847,8 +989,26 @@
     </style>
 </head>
 <body>
+    <!-- Indicateur de statut réseau -->
+    <div id="networkStatus" class="network-status online">
+        <span class="dot"></span>
+        <span id="networkText">En ligne</span>
+    </div>
+
+    <!-- Prompt d'installation PWA -->
+    <div id="installPrompt" class="install-prompt">
+        <div class="icon">📱</div>
+        <div class="content">
+            <div class="title">Installer l'application</div>
+            <div class="description">Accédez rapidement et travaillez hors ligne</div>
+        </div>
+        <div class="actions">
+            <button class="btn-install" id="installBtn">Installer</button>
+            <button class="btn-dismiss" id="dismissBtn">Plus tard</button>
+        </div>
+    </div>
+
     <div class="container">
-        <!-- En-tête avec nom -->
         <div class="card">
             <div id="namePrompt" class="alert-warning hidden">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -919,7 +1079,6 @@
             </div>
         </div>
 
-        <!-- Statistiques -->
         <button id="toggleStatsBtn" class="btn-secondary full-width-btn">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
@@ -954,7 +1113,6 @@
             </div>
         </div>
 
-        <!-- Boutons d'export -->
         <div class="button-grid">
             <button id="copyReportBtn" class="btn-secondary">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1025,11 +1183,13 @@
         </div>
 
         <div class="footer">
-            Créé par Clement Schlosser
+            Créé par Clement Schlosser • Mode hors ligne activé ✓
         </div>
     </div>
 
     <script>
+        // Variables globales
+        let deferredPrompt;
         let state = {
             currentTime: new Date(),
             entries: [],
@@ -1045,6 +1205,67 @@
             editingEntry: null
         };
 
+        // ========== PWA: Enregistrement du Service Worker ==========
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker enregistré:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('❌ Échec enregistrement Service Worker:', error);
+                    });
+            });
+        }
+
+        // ========== PWA: Gestion de l'installation ==========
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Affiche le prompt d'installation après 3 secondes
+            setTimeout(() => {
+                document.getElementById('installPrompt').classList.add('show');
+            }, 3000);
+        });
+
+        document.getElementById('installBtn').addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+                console.log('✅ PWA installée');
+            }
+            
+            deferredPrompt = null;
+            document.getElementById('installPrompt').classList.remove('show');
+        });
+
+        document.getElementById('dismissBtn').addEventListener('click', () => {
+            document.getElementById('installPrompt').classList.remove('show');
+        });
+
+        // ========== PWA: Détection de l'état réseau ==========
+        function updateNetworkStatus() {
+            const statusEl = document.getElementById('networkStatus');
+            const textEl = document.getElementById('networkText');
+            
+            if (navigator.onLine) {
+                statusEl.className = 'network-status online';
+                textEl.textContent = 'En ligne';
+            } else {
+                statusEl.className = 'network-status offline';
+                textEl.textContent = 'Hors ligne';
+            }
+        }
+
+        window.addEventListener('online', updateNetworkStatus);
+        window.addEventListener('offline', updateNetworkStatus);
+        updateNetworkStatus();
+
+        // ========== Fonctions de l'application ==========
         function loadData() {
             const saved = localStorage.getItem('timeClockData');
             if (saved) {
@@ -1685,6 +1906,7 @@
             }
         }
 
+        // ========== Event Listeners ==========
         document.addEventListener('click', (e) => {
             if (e.target.id === 'clockInBtn' || e.target.closest('#clockInBtn')) {
                 clockIn();
@@ -1735,6 +1957,7 @@
             updateUI();
         });
 
+        // ========== Initialisation ==========
         loadData();
         updateUI();
 
