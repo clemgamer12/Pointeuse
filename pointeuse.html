@@ -2,341 +2,1746 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>WorkTime Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pointeuse</title>
     <style>
-        :root {
-            --ios-blue: #007AFF;
-            --ios-green: #34C759;
-            --ios-red: #FF3B30;
-            --ios-orange: #FF9500;
-            --ios-gray: #8E8E93;
-            --ios-bg: #F2F2F7;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--ios-bg);
-            color: #000;
-            padding: env(safe-area-inset-top) 16px 40px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #9333ea 0%, #4f46e5 100%);
+            padding: 16px;
         }
 
-        /* --- DASHBOARD --- */
+        .container {
+            max-width: 768px;
+            margin: 0 auto;
+        }
+
         .card {
             background: white;
-            border-radius: 20px;
-            padding: 20px;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .alert-warning {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding: 16px;
+            background: #fefce8;
+            border: 2px solid #fde047;
+            border-radius: 12px;
+        }
+
+        .alert-warning svg {
+            width: 20px;
+            height: 20px;
+            color: #ca8a04;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #713f12;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"], input[type="date"], input[type="time"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus, input[type="date"]:focus, input[type="time"]:focus {
+            outline: none;
+            border-color: #9333ea;
+        }
+
+        .name-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
-        .header-section { text-align: center; margin-bottom: 25px; }
-        #live-time { font-size: 52px; font-weight: 800; letter-spacing: -2px; color: #1c1c1e; }
-        #live-date { font-size: 17px; color: var(--ios-gray); margin-top: -5px; }
-
-        /* --- STATS GRID --- */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .stat-box { background: #F8F8FA; padding: 15px; border-radius: 15px; border: 1px solid #E5E5EA; }
-        .stat-label { font-size: 11px; font-weight: 600; color: var(--ios-gray); text-transform: uppercase; margin-bottom: 4px; }
-        .stat-value { font-size: 19px; font-weight: 700; color: var(--ios-blue); }
-
-        /* --- BUTTONS --- */
-        .main-actions { display: grid; grid-template-columns: 1fr; gap: 12px; }
-        .btn {
-            border: none; border-radius: 14px; padding: 18px;
-            font-size: 17px; font-weight: 600; cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex; align-items: center; justify-content: center; gap: 8px;
+        .name-display .text {
+            font-size: 14px;
+            color: #4b5563;
         }
-        .btn:active { transform: scale(0.96); opacity: 0.8; }
-        
-        .btn-start { background: var(--ios-green); color: white; }
-        .btn-pause { background: var(--ios-orange); color: white; }
-        .btn-stop { background: var(--ios-red); color: white; }
-        .btn-secondary { background: #E5E5EA; color: #000; font-size: 14px; padding: 12px; }
 
-        /* --- HISTORY LIST --- */
-        .history-list { margin-top: 8px; }
+        .name-display .name {
+            font-weight: 600;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 8px;
+            transition: color 0.2s;
+        }
+
+        .icon-btn:hover {
+            color: #4b5563;
+        }
+
+        .settings-panel {
+            margin-bottom: 24px;
+            padding: 16px;
+            background: #f9fafb;
+            border-radius: 12px;
+        }
+
+        .settings-panel label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .date-time-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #4b5563;
+            margin-bottom: 8px;
+        }
+
+        .date-time-header svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .date-time-header span {
+            font-size: 18px;
+            text-transform: capitalize;
+        }
+
+        .clock-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .clock-display svg {
+            width: 40px;
+            height: 40px;
+            color: #9333ea;
+        }
+
+        .clock-time {
+            font-size: 72px;
+            font-weight: bold;
+            color: #1f2937;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -2px;
+        }
+
+        .total-today {
+            font-size: 32px;
+            font-weight: 600;
+            color: #9333ea;
+            margin-top: 16px;
+        }
+
+        .total-today-label {
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: normal;
+            margin-bottom: 4px;
+        }
+
+        .pause-display {
+            font-size: 18px;
+            color: #f97316;
+            margin-top: 8px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 32px;
+        }
+
+        button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 20px 40px;
+            border: none;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            transform: scale(1.02);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .btn-clock-in {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-pause {
+            background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
+            color: white;
+        }
+
+        .btn-resume {
+            background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+            color: white;
+        }
+
+        .btn-clock-out {
+            background: linear-gradient(135deg, #ef4444 0%, #f43f5e 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #9333ea;
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+
+        .btn-cyan {
+            background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%);
+            color: white;
+        }
+
+        .btn-export {
+            background: linear-gradient(135deg, #9333ea 0%, #4f46e5 100%);
+            color: white;
+            padding: 12px 16px;
+            font-size: 14px;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+            padding: 12px 16px;
+            font-size: 14px;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        button svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .btn-clock-in svg, .btn-clock-out svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .active-session {
+            margin-top: 24px;
+            padding: 24px;
+            background: linear-gradient(135deg, #f3e8ff 0%, #e0e7ff 100%);
+            border-radius: 16px;
+        }
+
+        .session-label {
+            font-size: 12px;
+            color: #4b5563;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .session-duration {
+            font-size: 48px;
+            font-weight: bold;
+            color: #9333ea;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .session-info {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 12px;
+        }
+
+        .pause-indicator {
+            margin-left: 12px;
+            color: #ec4899;
+            font-weight: 600;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .stat-box {
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+        .stat-box.blue {
+            background: #dbeafe;
+        }
+
+        .stat-box.green {
+            background: #d1fae5;
+        }
+
+        .stat-box.purple {
+            background: #f3e8ff;
+        }
+
+        .stat-box.orange {
+            background: #fed7aa;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .stat-box.blue .stat-label {
+            color: #1e40af;
+        }
+
+        .stat-box.green .stat-label {
+            color: #047857;
+        }
+
+        .stat-box.purple .stat-label {
+            color: #7c3aed;
+        }
+
+        .stat-box.orange .stat-label {
+            color: #c2410c;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .stat-box.blue .stat-value {
+            color: #1e3a8a;
+        }
+
+        .stat-box.green .stat-value {
+            color: #065f46;
+        }
+
+        .stat-box.purple .stat-value {
+            color: #6b21a8;
+        }
+
+        .stat-box.orange .stat-value {
+            color: #9a3412;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .entry-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .entry-item {
+            border: 2px solid #f3f4f6;
+            border-radius: 16px;
+            padding: 20px;
+            transition: background 0.2s;
+        }
+
+        .entry-item:hover {
+            background: #f9fafb;
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .entry-times {
+            display: flex;
+            gap: 32px;
+        }
+
+        .entry-time {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .entry-time-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .entry-time-value {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .entry-time-value.green {
+            color: #059669;
+        }
+
+        .entry-time-value.red {
+            color: #dc2626;
+        }
+
+        .entry-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .entry-actions button {
+            padding: 8px;
+            box-shadow: none;
+        }
+
+        .entry-actions button:hover {
+            opacity: 0.7;
+        }
+
+        .entry-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f3e8ff;
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .entry-stats {
+            display: flex;
+            gap: 24px;
+            font-size: 14px;
+        }
+
+        .entry-stats .label {
+            color: #4b5563;
+        }
+
+        .entry-stats .value {
+            font-weight: 600;
+        }
+
+        .entry-stats .value.orange {
+            color: #ea580c;
+        }
+
+        .entry-stats .value.purple {
+            color: #7c3aed;
+        }
+
+        .pause-details {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .pause-details-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .pause-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #4b5563;
+            margin-bottom: 4px;
+        }
+
+        .pause-item .time {
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 64px 0;
+            color: #d1d5db;
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            opacity: 0.3;
+        }
+
+        .empty-state p {
+            font-size: 18px;
+        }
+
+        .history-section {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .history-section h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 16px;
+        }
+
+        .history-list {
+            max-height: 320px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
         .history-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 0; border-bottom: 0.5px solid #D1D1D6;
-        }
-        .history-item:last-child { border: none; }
-        .hist-main { font-weight: 600; font-size: 16px; }
-        .hist-sub { font-size: 13px; color: var(--ios-gray); }
-        .hist-right { text-align: right; }
-        .hist-total { font-weight: 700; color: var(--ios-blue); }
-
-        /* --- MODAL --- */
-        .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
-            display: none; align-items: center; justify-content: center; z-index: 1000;
-        }
-        .modal-body { width: 90%; max-width: 380px; }
-        input { 
-            width: 100%; padding: 14px; margin: 8px 0 16px; border: 1px solid #D1D1D6; 
-            border-radius: 12px; font-size: 16px; background: #FFF;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: #f9fafb;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: background 0.2s;
         }
 
-        .badge-overtime { font-size: 10px; background: #E1F5FE; color: #0288D1; padding: 2px 6px; border-radius: 4px; }
+        .history-item:hover {
+            background: #f3f4f6;
+        }
+
+        .history-date {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .history-time {
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .history-pause {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .history-duration {
+            font-size: 18px;
+            font-weight: bold;
+            color: #9333ea;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        pre {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #374151;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .section-header h2 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .section-header .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 24px 0;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        h3 {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        h3 svg {
+            width: 24px;
+            height: 24px;
+            color: #9333ea;
+        }
+
+        .full-width-btn {
+            width: 100%;
+            justify-content: center;
+            font-size: 16px;
+            padding: 16px 24px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+
+            .card {
+                padding: 24px;
+                margin-bottom: 16px;
+            }
+
+            .clock-time {
+                font-size: 56px;
+            }
+
+            .total-today {
+                font-size: 28px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+                justify-content: center;
+                padding: 16px 32px;
+                font-size: 16px;
+            }
+
+            .entry-times {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .session-duration {
+                font-size: 40px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .section-header .actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
+            h3 {
+                font-size: 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 8px;
+            }
+
+            .card {
+                padding: 20px;
+                border-radius: 20px;
+            }
+
+            .clock-time {
+                font-size: 48px;
+            }
+
+            .clock-display svg {
+                width: 32px;
+                height: 32px;
+            }
+
+            .total-today {
+                font-size: 24px;
+            }
+
+            button {
+                padding: 14px 24px;
+                font-size: 15px;
+            }
+
+            .btn-export, .btn-delete {
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+
+            .entry-time-value {
+                font-size: 18px;
+            }
+
+            .session-duration {
+                font-size: 36px;
+            }
+
+            .stat-value {
+                font-size: 20px;
+            }
+
+            .history-duration {
+                font-size: 16px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 900px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .entry-times {
+                gap: 48px;
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .container {
+                max-width: 1024px;
+            }
+
+            .card {
+                padding: 40px;
+            }
+
+            .clock-time {
+                font-size: 80px;
+            }
+
+            .total-today {
+                font-size: 36px;
+            }
+        }
+
+        /* Pour les tablettes en mode paysage */
+        @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+            .action-buttons {
+                flex-direction: row;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Support du mode sombre */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(135deg, #581c87 0%, #312e81 100%);
+            }
+        }
     </style>
 </head>
 <body>
-
-    <div class="header-section">
-        <div id="live-time">00:00</div>
-        <div id="live-date">Chargement...</div>
-    </div>
-
-    <div class="card">
-        <div class="stats-grid">
-            <div class="stat-box">
-                <div class="stat-label">Aujourd'hui (Net)</div>
-                <div id="today-total" class="stat-value">0h 00m</div>
+    <div class="container">
+        <!-- En-tête avec nom -->
+        <div class="card">
+            <div id="namePrompt" class="alert-warning hidden">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                <div class="alert-content">
+                    <p class="alert-title">Configurez votre nom</p>
+                    <input type="text" id="nameInput" placeholder="Votre nom">
+                </div>
             </div>
-            <div class="stat-box">
-                <div class="stat-label">Semaine</div>
-                <div id="week-total" class="stat-value">0h 00m</div>
+
+            <div id="nameDisplay" class="name-display hidden">
+                <div class="text">
+                    👤 <span class="name" id="employeeNameDisplay"></span>
+                </div>
+                <button id="editNameBtn" class="icon-btn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div id="nameSettings" class="settings-panel hidden">
+                <label>Modifier votre nom</label>
+                <input type="text" id="nameEditInput">
+            </div>
+
+            <div class="text-center">
+                <div class="date-time-header">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <span id="currentDate"></span>
+                </div>
+                <div class="clock-display">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="clock-time" id="currentTime"></span>
+                </div>
+                <div class="total-today">
+                    <div class="total-today-label">Temps travaillé aujourd'hui</div>
+                    <span id="totalToday">0h 00m 00s</span>
+                </div>
+                <div id="pauseDisplay" class="pause-display hidden">
+                    ⏸️ Pause cumulée: <span id="pauseTime">0h 00m 00s</span>
+                </div>
+            </div>
+
+            <div class="action-buttons" id="actionButtons">
+                <button id="clockInBtn" class="btn-clock-in">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                    </svg>
+                    Pointer l'arrivée
+                </button>
+            </div>
+
+            <div id="activeSession" class="active-session hidden">
+                <div class="text-center">
+                    <div class="session-label">Session en cours</div>
+                    <div class="session-duration" id="sessionDuration">0h 00m 00s</div>
+                    <div class="session-info">
+                        Début: <span id="sessionStart"></span>
+                        <span id="pauseIndicator" class="pause-indicator hidden">⏸️ EN PAUSE</span>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="main-actions" id="controls">
-            </div>
-    </div>
+        <!-- Statistiques -->
+        <button id="toggleStatsBtn" class="btn-secondary full-width-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+            <span id="statsToggleText">Voir les statistiques</span>
+        </button>
 
-    <div class="card" style="padding: 15px;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div class="stat-label">Mois en cours</div>
-            <div id="month-total" style="font-weight: 700; color: var(--ios-gray);">0h</div>
+        <div id="statsPanel" class="card hidden">
+            <h3>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                </svg>
+                Statistiques
+            </h3>
+            <div class="stats-grid">
+                <div class="stat-box blue">
+                    <div class="stat-label">Cette semaine</div>
+                    <div class="stat-value" id="weekTotal">0h00</div>
+                </div>
+                <div class="stat-box green">
+                    <div class="stat-label">Ce mois</div>
+                    <div class="stat-value" id="monthTotal">0h00</div>
+                </div>
+                <div class="stat-box purple">
+                    <div class="stat-label">Total travaillé</div>
+                    <div class="stat-value" id="allWorkTime">0h00</div>
+                </div>
+                <div class="stat-box orange">
+                    <div class="stat-label">Total pauses</div>
+                    <div class="stat-value" id="allPauseTime">0h00</div>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <div class="card">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-            <h3 style="font-size: 18px; font-weight: 700;">Sessions Récentes</h3>
-            <button class="btn-secondary" style="width: auto; padding: 5px 10px;" onclick="openManual()">+ Manuel</button>
+        <!-- Boutons d'export -->
+        <div class="button-grid">
+            <button id="copyReportBtn" class="btn-secondary">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                </svg>
+                <span id="copyBtnText">Copier rapport</span>
+            </button>
+            <button id="toggleReportBtn" class="btn-secondary">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <span id="reportToggleText">Voir rapport</span>
+            </button>
         </div>
-        <div id="history-list" class="history-list">
-            </div>
-    </div>
 
-    <div style="display: flex; gap: 10px;">
-        <button class="btn btn-secondary" style="flex: 1;" onclick="exportPro()">Exporter Rapport</button>
-        <button class="btn btn-secondary" style="flex: 1; color: var(--ios-red);" onclick="clearAll()">Réinitialiser</button>
-    </div>
+        <button id="toggleManualBtn" class="btn-cyan full-width-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span id="manualToggleText">Ajouter/Modifier une session</span>
+        </button>
 
-    <div id="manual-modal" class="modal">
-        <div class="card modal-body">
-            <h3 style="margin-bottom: 15px;">Session Manuelle</h3>
-            <label class="stat-label">Date</label>
-            <input type="date" id="m-date">
-            <label class="stat-label">Arrivée - Départ</label>
-            <div style="display: flex; gap: 10px;">
-                <input type="time" id="m-start">
-                <input type="time" id="m-end">
+        <div id="manualEntryPanel" class="card hidden">
+            <h3 id="manualTitle">📝 Ajouter une session</h3>
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="manualDate">
             </div>
-            <label class="stat-label">Pause (minutes)</label>
-            <input type="number" id="m-pause" value="0">
-            <div class="main-actions">
-                <button class="btn btn-start" onclick="saveManual()">Enregistrer</button>
-                <button class="btn btn-secondary" onclick="closeManual()">Annuler</button>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Heure d'arrivée</label>
+                    <input type="time" id="manualClockIn">
+                </div>
+                <div class="form-group">
+                    <label>Heure de départ</label>
+                    <input type="time" id="manualClockOut">
+                </div>
             </div>
+            <button id="saveManualBtn" class="btn-clock-in full-width-btn">
+                ✓ <span id="saveBtnText">Ajouter</span> cette session
+            </button>
+        </div>
+
+        <div id="reportPanel" class="card hidden">
+            <pre id="reportContent"></pre>
+        </div>
+
+        <div class="card">
+            <div class="section-header">
+                <h2>Historique du jour</h2>
+                <div class="actions">
+                    <button id="exportBtn" class="btn-export">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        JSON
+                    </button>
+                    <button id="clearBtn" class="btn-delete">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div id="todayEntriesList"></div>
+            <div id="historyEntriesList"></div>
+        </div>
+
+        <div class="footer">
+            Créé par Clement Schlosser
         </div>
     </div>
 
     <script>
-        // CONFIGURATION
-        const DAILY_TARGET_MINS = 420; // 7 heures par jour cible
-
         let state = {
-            active: JSON.parse(localStorage.getItem('pro_active')) || null,
-            history: JSON.parse(localStorage.getItem('pro_history')) || []
+            currentTime: new Date(),
+            entries: [],
+            activeEntry: null,
+            isPaused: false,
+            pauseStart: null,
+            totalPauseTime: 0,
+            employeeName: '',
+            showStats: false,
+            showReport: false,
+            showManual: false,
+            showSettings: false,
+            editingEntry: null
         };
 
-        function save() {
-            localStorage.setItem('pro_active', JSON.stringify(state.active));
-            localStorage.setItem('pro_history', JSON.stringify(state.history));
-            render();
-        }
-
-        // --- ACTIONS ---
-        function punchIn() {
-            state.active = { start: new Date().toISOString(), pauses: [], isPaused: false };
-            save();
-        }
-
-        function togglePause() {
-            if (!state.active) return;
-            const now = new Date().toISOString();
-            if (!state.active.isPaused) {
-                state.active.pauses.push({ s: now, e: null });
-                state.active.isPaused = true;
-            } else {
-                state.active.pauses[state.active.pauses.length - 1].e = now;
-                state.active.isPaused = false;
+        function loadData() {
+            const saved = localStorage.getItem('timeClockData');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    state.entries = data.entries || [];
+                    state.activeEntry = data.activeEntry;
+                    state.isPaused = data.isPaused || false;
+                    state.pauseStart = data.pauseStart;
+                    state.totalPauseTime = data.totalPauseTime || 0;
+                    state.employeeName = data.employeeName || '';
+                } catch (e) {
+                    console.error('Erreur chargement:', e);
+                }
             }
-            save();
         }
 
-        function punchOut() {
-            if (!state.active) return;
-            if (state.active.isPaused) togglePause();
-            
-            const end = new Date().toISOString();
-            const start = state.active.start;
-            const totalMs = new Date(end) - new Date(start);
-            
-            let pauseMs = 0;
-            state.active.pauses.forEach(p => { pauseMs += (new Date(p.e) - new Date(p.s)); });
+        function saveData() {
+            localStorage.setItem('timeClockData', JSON.stringify({
+                entries: state.entries,
+                activeEntry: state.activeEntry,
+                isPaused: state.isPaused,
+                pauseStart: state.pauseStart,
+                totalPauseTime: state.totalPauseTime,
+                employeeName: state.employeeName
+            }));
+        }
 
-            const netMins = Math.round((totalMs - pauseMs) / 60000);
+        function formatTime(date) {
+            return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+
+        function formatDate(date) {
+            return date.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        function formatDuration(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${hours}h ${String(minutes).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
+        }
+
+        function formatDurationSimple(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            return `${hours}h${String(minutes).padStart(2, '0')}`;
+        }
+
+        function updateUI() {
+            document.getElementById('currentTime').textContent = formatTime(state.currentTime);
+            document.getElementById('currentDate').textContent = formatDate(state.currentTime);
+
+            if (!state.employeeName) {
+                document.getElementById('namePrompt').classList.remove('hidden');
+                document.getElementById('nameDisplay').classList.add('hidden');
+            } else {
+                document.getElementById('namePrompt').classList.add('hidden');
+                document.getElementById('nameDisplay').classList.remove('hidden');
+                document.getElementById('employeeNameDisplay').textContent = state.employeeName;
+                document.getElementById('nameEditInput').value = state.employeeName;
+            }
+
+            if (state.showSettings) {
+                document.getElementById('nameSettings').classList.remove('hidden');
+            } else {
+                document.getElementById('nameSettings').classList.add('hidden');
+            }
+
+            const actionButtons = document.getElementById('actionButtons');
+            if (!state.activeEntry) {
+                actionButtons.innerHTML = `
+                    <button id="clockInBtn" class="btn-clock-in">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                        </svg>
+                        Pointer l'arrivée
+                    </button>
+                `;
+            } else {
+                const pauseBtnClass = state.isPaused ? 'btn-resume' : 'btn-pause';
+                const pauseIcon = state.isPaused 
+                    ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'
+                    : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>';
+                const pauseText = state.isPaused ? 'Reprendre' : 'Pause';
+                
+                actionButtons.innerHTML = `
+                    <button id="pauseBtn" class="${pauseBtnClass}">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            ${pauseIcon}
+                        </svg>
+                        ${pauseText}
+                    </button>
+                    <button id="clockOutBtn" class="btn-clock-out">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                        </svg>
+                        Pointer le départ
+                    </button>
+                `;
+            }
+
+            if (state.activeEntry) {
+                document.getElementById('activeSession').classList.remove('hidden');
+                document.getElementById('sessionStart').textContent = formatTime(new Date(state.activeEntry.clockIn));
+                
+                if (state.isPaused) {
+                    document.getElementById('pauseIndicator').classList.remove('hidden');
+                } else {
+                    document.getElementById('pauseIndicator').classList.add('hidden');
+                }
+                
+                const duration = getCurrentDuration();
+                document.getElementById('sessionDuration').textContent = formatDuration(duration);
+            } else {
+                document.getElementById('activeSession').classList.add('hidden');
+            }
+
+            if (state.activeEntry && state.totalPauseTime > 0) {
+                document.getElementById('pauseDisplay').classList.remove('hidden');
+                let totalPause = state.totalPauseTime;
+                if (state.isPaused && state.pauseStart) {
+                    totalPause += Math.floor((state.currentTime - new Date(state.pauseStart)) / 1000);
+                }
+                document.getElementById('pauseTime').textContent = formatDuration(totalPause);
+            } else {
+                document.getElementById('pauseDisplay').classList.add('hidden');
+            }
+
+            const today = state.currentTime.toLocaleDateString('fr-FR');
+            const todayEntries = state.entries.filter(e => e.date === today && e.clockOut);
+            let total = todayEntries.reduce((acc, entry) => acc + (entry.duration - (entry.pauseTime || 0)), 0);
             
-            state.history.unshift({
-                id: Date.now(),
-                start: start,
-                end: end,
-                netMins: netMins,
-                pauseMins: Math.round(pauseMs / 60000)
+            if (state.activeEntry && !state.isPaused) {
+                const now = state.currentTime;
+                const start = new Date(state.activeEntry.clockIn);
+                const currentDuration = Math.floor((now - start) / 1000);
+                total += currentDuration - state.totalPauseTime;
+            }
+            
+            document.getElementById('totalToday').textContent = formatDuration(total);
+
+            renderTodayEntries();
+            renderHistoryEntries();
+
+            if (state.showStats) {
+                updateStats();
+            }
+
+            document.getElementById('statsToggleText').textContent = state.showStats ? 'Masquer les statistiques' : 'Voir les statistiques';
+            document.getElementById('reportToggleText').textContent = state.showReport ? 'Masquer' : 'Voir rapport';
+            document.getElementById('manualToggleText').textContent = state.showManual ? 'Annuler' : 'Ajouter/Modifier une session';
+
+            if (state.showStats) {
+                document.getElementById('statsPanel').classList.remove('hidden');
+            } else {
+                document.getElementById('statsPanel').classList.add('hidden');
+            }
+
+            if (state.showReport) {
+                document.getElementById('reportPanel').classList.remove('hidden');
+                document.getElementById('reportContent').textContent = generateReport();
+            } else {
+                document.getElementById('reportPanel').classList.add('hidden');
+            }
+
+            if (state.showManual) {
+                document.getElementById('manualEntryPanel').classList.remove('hidden');
+            } else {
+                document.getElementById('manualEntryPanel').classList.add('hidden');
+            }
+        }
+
+        function getCurrentDuration() {
+            if (!state.activeEntry) return 0;
+            const now = state.currentTime;
+            const start = new Date(state.activeEntry.clockIn);
+            let duration = Math.floor((now - start) / 1000);
+            
+            if (state.isPaused && state.pauseStart) {
+                const currentPause = Math.floor((now - new Date(state.pauseStart)) / 1000);
+                return duration - state.totalPauseTime - currentPause;
+            }
+            
+            return duration - state.totalPauseTime;
+        }
+
+        function renderTodayEntries() {
+            const today = state.currentTime.toLocaleDateString('fr-FR');
+            const todayEntries = state.entries.filter(e => e.date === today);
+            const container = document.getElementById('todayEntriesList');
+            
+            if (todayEntries.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <p>Aucun pointage aujourd'hui</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '<div class="entry-list">';
+            todayEntries.forEach(entry => {
+                const workTime = entry.workTime || (entry.duration - (entry.pauseTime || 0));
+                const clockIn = new Date(entry.clockIn);
+                const clockOut = new Date(entry.clockOut);
+                
+                html += `
+                    <div class="entry-item">
+                        <div class="entry-header">
+                            <div class="entry-times">
+                                <div class="entry-time">
+                                    <div class="entry-time-label">Arrivée</div>
+                                    <div class="entry-time-value green">${formatTime(clockIn)}</div>
+                                </div>
+                                <div class="entry-time">
+                                    <div class="entry-time-label">Départ</div>
+                                    <div class="entry-time-value red">${formatTime(clockOut)}</div>
+                                </div>
+                            </div>
+                            <div class="entry-actions">
+                                <button onclick="editEntry(${entry.id})" style="background: none; border: none; color: #3b82f6; cursor: pointer;">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    </svg>
+                                </button>
+                                <button onclick="deleteEntry(${entry.id})" style="background: none; border: none; color: #ef4444; cursor: pointer;">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="entry-summary">
+                            <div class="entry-stats">
+                                <div>
+                                    <span class="label">Pause: </span>
+                                    <span class="value orange">${formatDurationSimple(entry.pauseTime || 0)}</span>
+                                </div>
+                                <div>
+                                    <span class="label">Travail: </span>
+                                    <span class="value purple">${formatDurationSimple(workTime)}</span>
+                                </div>
+                            </div>
+                        </div>
+                `;
+                
+                if (entry.pauseRecords && entry.pauseRecords.length > 0) {
+                    html += `
+                        <div class="pause-details">
+                            <div class="pause-details-label">Détail des pauses (${entry.pauseRecords.length}):</div>
+                    `;
+                    entry.pauseRecords.forEach((pause, i) => {
+                        const pStart = new Date(pause.start);
+                        const pEnd = new Date(pause.end);
+                        html += `
+                            <div class="pause-item">
+                                <span>${pStart.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})} → ${pEnd.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}</span>
+                                <span class="time">${formatDurationSimple(pause.duration)}</span>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                }
+                
+                html += '</div>';
             });
-
-            state.active = null;
-            save();
+            html += '</div>';
+            
+            container.innerHTML = html;
         }
 
-        // --- UI RENDERING ---
-        function render() {
-            const controls = document.getElementById('controls');
+        function renderHistoryEntries() {
+            const today = state.currentTime.toLocaleDateString('fr-FR');
+            const historyEntries = state.entries.filter(e => e.date !== today);
+            const container = document.getElementById('historyEntriesList');
             
-            // BOUTONS DYNAMIQUES
-            if (!state.active) {
-                controls.innerHTML = `<button class="btn btn-start" onclick="punchIn()">▶ Pointer l'Arrivée</button>`;
-            } else {
-                controls.innerHTML = `
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-pause" style="flex: 2;" onclick="togglePause()">
-                            ${state.active.isPaused ? '⏯ Reprendre' : '⏸ Pause'}
-                        </button>
-                        <button class="btn btn-stop" style="flex: 1;" onclick="punchOut()">Terminer</button>
-                    </div>`;
+            if (historyEntries.length === 0) {
+                container.innerHTML = '';
+                return;
             }
-
-            // HISTORIQUE
-            const list = document.getElementById('history-list');
-            list.innerHTML = state.history.slice(0, 10).map(item => {
-                const date = new Date(item.start);
-                const isOvertime = item.netMins > DAILY_TARGET_MINS;
-                return `
+            
+            let html = '<div class="history-section"><h3>Historique complet</h3><div class="history-list">';
+            
+            historyEntries.forEach(entry => {
+                const workTime = entry.workTime || (entry.duration - (entry.pauseTime || 0));
+                const clockIn = new Date(entry.clockIn);
+                const clockOut = new Date(entry.clockOut);
+                
+                html += `
                     <div class="history-item">
-                        <div class="hist-info">
-                            <div class="hist-main">${date.toLocaleDateString('fr-FR', {day:'numeric', month:'short'})}</div>
-                            <div class="hist-sub">${formatTimeStr(item.start)} - ${formatTimeStr(item.end)}</div>
+                        <div>
+                            <div class="history-date">${entry.date}</div>
+                            <div class="history-time">
+                                ${formatTime(clockIn)} → ${formatTime(clockOut)}
+                            </div>
+                            <div class="history-pause">
+                                Pause: ${formatDurationSimple(entry.pauseTime || 0)}
+                            </div>
                         </div>
-                        <div class="hist-right">
-                            <div class="hist-total">${formatMins(item.netMins)}</div>
-                            ${isOvertime ? `<span class="badge-overtime">+${formatMins(item.netMins - DAILY_TARGET_MINS)}</span>` : ''}
+                        <div style="text-align: right;">
+                            <div class="history-duration">
+                                ${formatDurationSimple(workTime)}
+                            </div>
+                            <div class="history-actions">
+                                <button onclick="editEntry(${entry.id})" style="background: none; border: none; color: #3b82f6; cursor: pointer; padding: 4px;">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 12px; height: 12px;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    </svg>
+                                </button>
+                                <button onclick="deleteEntry(${entry.id})" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px;">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 12px; height: 12px;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
-                    </div>`;
-            }).join('') || '<p style="text-align:center; color:gray; padding:20px;">Aucune donnée</p>';
-
-            updateStats();
+                    </div>
+                `;
+            });
+            
+            html += '</div></div>';
+            container.innerHTML = html;
         }
 
         function updateStats() {
-            const todayStr = new Date().toDateString();
+            const now = state.currentTime;
+            const thisWeekStart = new Date(now);
+            thisWeekStart.setDate(now.getDate() - now.getDay() + 1);
+            thisWeekStart.setHours(0, 0, 0, 0);
             
-            // Calcul aujourd'hui
-            let todayMins = state.history
-                .filter(i => new Date(i.start).toDateString() === todayStr)
-                .reduce((acc, curr) => acc + curr.netMins, 0);
-
-            // Ajout temps réel si actif
-            if (state.active && !state.active.isPaused) {
-                const live = Math.round((new Date() - new Date(state.active.start)) / 60000);
-                let pMs = 0;
-                state.active.pauses.forEach(p => { pMs += (new Date(p.e || new Date()) - new Date(p.s)); });
-                todayMins += (live - Math.round(pMs / 60000));
-            }
-
-            document.getElementById('today-total').innerText = formatMins(todayMins);
+            const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
             
-            // Calcul Semaine (Lundi-Dimanche)
-            const now = new Date();
-            const startOfWeek = new Date(now.setDate(now.getDate() - (now.getDay() || 7) + 1)).setHours(0,0,0,0);
-            const weekMins = state.history
-                .filter(i => new Date(i.start) >= startOfWeek)
-                .reduce((acc, curr) => acc + curr.netMins, 0);
-            document.getElementById('week-total').innerText = formatMins(weekMins);
-
-            // Calcul Mois
-            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-            const monthMins = state.history
-                .filter(i => new Date(i.start) >= startOfMonth)
-                .reduce((acc, curr) => acc + curr.netMins, 0);
-            document.getElementById('month-total').innerText = formatMins(monthMins);
-        }
-
-        // --- HELPERS ---
-        function formatMins(m) { return `${Math.floor(m / 60)}h ${String(m % 60).padStart(2, '0')}m`; }
-        function formatTimeStr(iso) { return new Date(iso).toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}); }
-
-        function tick() {
-            const now = new Date();
-            document.getElementById('live-time').innerText = now.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
-            document.getElementById('live-date').innerText = now.toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long'});
-            if (state.active) updateStats();
-        }
-
-        function openManual() { document.getElementById('manual-modal').style.display = 'flex'; }
-        function closeManual() { document.getElementById('manual-modal').style.display = 'none'; }
-
-        function saveManual() {
-            const d = document.getElementById('m-date').value;
-            const s = document.getElementById('m-start').value;
-            const e = document.getElementById('m-end').value;
-            const p = parseInt(document.getElementById('m-pause').value) || 0;
-
-            if (!d || !s || !e) return alert("Veuillez remplir les heures.");
-
-            const start = new Date(`${d}T${s}`);
-            const end = new Date(`${d}T${e}`);
-            const net = Math.round((end - start) / 60000) - p;
-
-            if (net <= 0) return alert("L'heure de départ doit être après l'arrivée.");
-
-            state.history.unshift({ id: Date.now(), start: start.toISOString(), end: end.toISOString(), netMins: net, pauseMins: p });
-            save();
-            closeManual();
-        }
-
-        function exportPro() {
-            const csv = ["Date,Arrivee,Depart,Pause(min),Total Net"];
-            state.history.forEach(i => {
-                csv.push(`${new Date(i.start).toLocaleDateString()},${formatTimeStr(i.start)},${formatTimeStr(i.end)},${i.pauseMins},${formatMins(i.netMins)}`);
+            const weekEntries = state.entries.filter(e => {
+                const entryDate = new Date(e.clockIn);
+                return entryDate >= thisWeekStart && e.clockOut;
             });
-            const blob = new Blob([csv.join("\n")], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.setAttribute('href', url);
-            a.setAttribute('download', `Rapport_Heures_${new Date().getMonth()+1}.csv`);
-            a.click();
+            
+            const monthEntries = state.entries.filter(e => {
+                const entryDate = new Date(e.clockIn);
+                return entryDate >= thisMonthStart && e.clockOut;
+            });
+            
+            const weekTotal = weekEntries.reduce((acc, e) => acc + (e.workTime || (e.duration - (e.pauseTime || 0))), 0);
+            const monthTotal = monthEntries.reduce((acc, e) => acc + (e.workTime || (e.duration - (e.pauseTime || 0))), 0);
+            
+            const allWorkTime = state.entries.filter(e => e.clockOut).reduce((acc, e) => acc + (e.workTime || (e.duration - (e.pauseTime || 0))), 0);
+            const allPauseTime = state.entries.filter(e => e.clockOut).reduce((acc, e) => acc + (e.pauseTime || 0), 0);
+            
+            document.getElementById('weekTotal').textContent = formatDurationSimple(weekTotal);
+            document.getElementById('monthTotal').textContent = formatDurationSimple(monthTotal);
+            document.getElementById('allWorkTime').textContent = formatDurationSimple(allWorkTime);
+            document.getElementById('allPauseTime').textContent = formatDurationSimple(allPauseTime);
         }
 
-        function clearAll() {
-            if (confirm("EFFACER TOUT L'HISTORIQUE ? Cette action est irréversible.")) {
-                state.history = [];
-                state.active = null;
-                save();
+        function generateReport() {
+            let report = '┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n';
+            report += '┃   📊 RAPPORT DE POINTAGE      ┃\n';
+            report += '┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n\n';
+            
+            if (state.employeeName) {
+                report += `👤 Employé: ${state.employeeName}\n`;
+                report += '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n';
+            }
+
+            const entriesByDate = {};
+            state.entries.forEach(entry => {
+                if (!entriesByDate[entry.date]) {
+                    entriesByDate[entry.date] = [];
+                }
+                entriesByDate[entry.date].push(entry);
+            });
+
+            const sortedDates = Object.keys(entriesByDate).sort((a, b) => {
+                const dateA = new Date(a.split('/').reverse().join('-'));
+                const dateB = new Date(b.split('/').reverse().join('-'));
+                return dateB - dateA;
+            });
+
+            let totalGeneral = 0;
+            let totalPauseGeneral = 0;
+
+            sortedDates.forEach(date => {
+                report += `📅 ${date}\n`;
+                report += '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
+                
+                let totalDay = 0;
+                let totalPauseDay = 0;
+                
+                entriesByDate[date].forEach((entry, index) => {
+                    const clockIn = new Date(entry.clockIn);
+                    const clockOut = new Date(entry.clockOut);
+                    const timeIn = clockIn.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'});
+                    const timeOut = clockOut.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'});
+                    const workTime = entry.workTime || (entry.duration - (entry.pauseTime || 0));
+                    
+                    report += `\n  📍 Session ${index + 1}:\n`;
+                    report += `  ├─ Arrivée:   ${timeIn}\n`;
+                    report += `  ├─ Départ:    ${timeOut}\n`;
+                    report += `  ├─ Pause:     ${formatDurationSimple(entry.pauseTime || 0)}\n`;
+                    report += `  └─ Travail:   ${formatDurationSimple(workTime)}\n`;
+                    
+                    if (entry.pauseRecords && entry.pauseRecords.length > 0) {
+                        report += `     Pauses (${entry.pauseRecords.length}):\n`;
+                        entry.pauseRecords.forEach((pause, i) => {
+                            const pStart = new Date(pause.start);
+                            const pEnd = new Date(pause.end);
+                            report += `     ${i + 1}. ${pStart.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})} → ${pEnd.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})} (${formatDurationSimple(pause.duration)})\n`;
+                        });
+                    }
+                    
+                    totalDay += workTime;
+                    totalPauseDay += (entry.pauseTime || 0);
+                });
+                
+                report += `\n  💼 Total travaillé: ${formatDurationSimple(totalDay)}\n`;
+                report += `  ⏸️  Total pause:     ${formatDurationSimple(totalPauseDay)}\n\n`;
+                
+                totalGeneral += totalDay;
+                totalPauseGeneral += totalPauseDay;
+            });
+
+            report += '┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n';
+            report += '┃         STATISTIQUES          ┃\n';
+            report += '┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n\n';
+            report += `🕐 Heures travaillées: ${formatDurationSimple(totalGeneral)}\n`;
+            report += `⏸️  Temps de pause:     ${formatDurationSimple(totalPauseGeneral)}\n`;
+            report += `📈 Nombre de jours:    ${sortedDates.length}\n`;
+            report += `📊 Moyenne/jour:       ${sortedDates.length > 0 ? formatDurationSimple(Math.floor(totalGeneral / sortedDates.length)) : '0h00'}\n`;
+            report += `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+            report += `Généré le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}\n`;
+
+            return report;
+        }
+
+        function clockIn() {
+            const now = new Date();
+            state.activeEntry = {
+                id: Date.now(),
+                clockIn: now.toISOString(),
+                clockOut: null,
+                pauseTime: 0,
+                pauseRecords: [],
+                date: now.toLocaleDateString('fr-FR'),
+                duration: 0,
+                employeeName: state.employeeName || 'Employé'
+            };
+            state.totalPauseTime = 0;
+            saveData();
+            updateUI();
+        }
+
+        function handlePause() {
+            const now = new Date();
+            if (!state.isPaused) {
+                state.pauseStart = now.toISOString();
+                state.isPaused = true;
+            } else {
+                if (state.pauseStart) {
+                    const pauseDuration = Math.floor((now - new Date(state.pauseStart)) / 1000);
+                    state.totalPauseTime += pauseDuration;
+                    
+                    if (state.activeEntry) {
+                        state.activeEntry.pauseRecords.push({
+                            start: state.pauseStart,
+                            end: now.toISOString(),
+                            duration: pauseDuration
+                        });
+                    }
+                }
+                state.pauseStart = null;
+                state.isPaused = false;
+            }
+            saveData();
+            updateUI();
+        }
+
+        function clockOut() {
+            if (state.activeEntry) {
+                if (state.isPaused) {
+                    alert('⚠️ Veuillez reprendre le travail avant de pointer la sortie');
+                    return;
+                }
+
+                const now = new Date();
+                const start = new Date(state.activeEntry.clockIn);
+                const duration = Math.floor((now - start) / 1000);
+                
+                const completedEntry = {
+                    ...state.activeEntry,
+                    clockOut: now.toISOString(),
+                    duration: duration,
+                    pauseTime: state.totalPauseTime,
+                    workTime: duration - state.totalPauseTime
+                };
+                
+                state.entries.unshift(completedEntry);
+                state.activeEntry = null;
+                state.isPaused = false;
+                state.pauseStart = null;
+                state.totalPauseTime = 0;
+                
+                saveData();
+                updateUI();
             }
         }
 
-        setInterval(tick, 1000);
-        tick();
-        render();
+        function deleteEntry(id) {
+            if (confirm('Supprimer cette entrée ?')) {
+                state.entries = state.entries.filter(e => e.id !== id);
+                saveData();
+                updateUI();
+            }
+        }
+
+        function editEntry(id) {
+            const entry = state.entries.find(e => e.id === id);
+            if (entry) {
+                state.editingEntry = entry;
+                const clockIn = new Date(entry.clockIn);
+                const clockOut = new Date(entry.clockOut);
+                
+                document.getElementById('manualDate').value = clockIn.toISOString().split('T')[0];
+                document.getElementById('manualClockIn').value = clockIn.toTimeString().slice(0, 5);
+                document.getElementById('manualClockOut').value = clockOut.toTimeString().slice(0, 5);
+                document.getElementById('manualTitle').textContent = '✏️ Modifier la session';
+                document.getElementById('saveBtnText').textContent = 'Modifier';
+                
+                state.showManual = true;
+                updateUI();
+            }
+        }
+
+        function saveManualEntry() {
+            const date = document.getElementById('manualDate').value;
+            const clockIn = document.getElementById('manualClockIn').value;
+            const clockOut = document.getElementById('manualClockOut').value;
+
+            if (!date || !clockIn || !clockOut) {
+                alert('❌ Veuillez remplir tous les champs');
+                return;
+            }
+
+            const clockInDate = new Date(`${date}T${clockIn}`);
+            const clockOutDate = new Date(`${date}T${clockOut}`);
+
+            if (clockOutDate <= clockInDate) {
+                alert('❌ L\'heure de départ doit être après l\'heure d\'arrivée');
+                return;
+            }
+
+            const duration = Math.floor((clockOutDate - clockInDate) / 1000);
+
+            if (state.editingEntry) {
+                state.entries = state.entries.map(e => 
+                    e.id === state.editingEntry.id 
+                        ? {
+                            ...e,
+                            clockIn: clockInDate.toISOString(),
+                            clockOut: clockOutDate.toISOString(),
+                            date: clockInDate.toLocaleDateString('fr-FR'),
+                            duration: duration,
+                            workTime: duration - (e.pauseTime || 0)
+                        }
+                        : e
+                );
+                alert('✅ Session modifiée avec succès !');
+            } else {
+                const newEntry = {
+                    id: Date.now(),
+                    clockIn: clockInDate.toISOString(),
+                    clockOut: clockOutDate.toISOString(),
+                    date: clockInDate.toLocaleDateString('fr-FR'),
+                    duration: duration,
+                    pauseTime: 0,
+                    workTime: duration,
+                    pauseRecords: [],
+                    employeeName: state.employeeName || 'Employé'
+                };
+                state.entries.unshift(newEntry);
+                alert('✅ Session ajoutée avec succès !');
+            }
+
+            state.showManual = false;
+            state.editingEntry = null;
+            document.getElementById('manualDate').value = '';
+            document.getElementById('manualClockIn').value = '';
+            document.getElementById('manualClockOut').value = '';
+            
+            saveData();
+            updateUI();
+        }
+
+        async function copyReport() {
+            const report = generateReport();
+            try {
+                await navigator.clipboard.writeText(report);
+                document.getElementById('copyBtnText').textContent = 'Copié ! ✓';
+                setTimeout(() => {
+                    document.getElementById('copyBtnText').textContent = 'Copier rapport';
+                }, 3000);
+            } catch (err) {
+                alert('Erreur lors de la copie. Veuillez réessayer.');
+            }
+        }
+
+        function exportData() {
+            const dataStr = JSON.stringify(state.entries, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `pointeuse_${state.employeeName || 'export'}_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ Êtes-vous sûr de vouloir effacer toutes les données ? Cette action est irréversible !')) {
+                state = {
+                    currentTime: new Date(),
+                    entries: [],
+                    activeEntry: null,
+                    isPaused: false,
+                    pauseStart: null,
+                    totalPauseTime: 0,
+                    employeeName: '',
+                    showStats: false,
+                    showReport: false,
+                    showManual: false,
+                    showSettings: false,
+                    editingEntry: null
+                };
+                localStorage.clear();
+                updateUI();
+            }
+        }
+
+        document.addEventListener('click', (e) => {
+            if (e.target.id === 'clockInBtn' || e.target.closest('#clockInBtn')) {
+                clockIn();
+            } else if (e.target.id === 'pauseBtn' || e.target.closest('#pauseBtn')) {
+                handlePause();
+            } else if (e.target.id === 'clockOutBtn' || e.target.closest('#clockOutBtn')) {
+                clockOut();
+            } else if (e.target.id === 'toggleStatsBtn' || e.target.closest('#toggleStatsBtn')) {
+                state.showStats = !state.showStats;
+                updateUI();
+            } else if (e.target.id === 'copyReportBtn' || e.target.closest('#copyReportBtn')) {
+                copyReport();
+            } else if (e.target.id === 'toggleReportBtn' || e.target.closest('#toggleReportBtn')) {
+                state.showReport = !state.showReport;
+                updateUI();
+            } else if (e.target.id === 'toggleManualBtn' || e.target.closest('#toggleManualBtn')) {
+                state.showManual = !state.showManual;
+                if (state.showManual) {
+                    state.editingEntry = null;
+                    document.getElementById('manualDate').value = '';
+                    document.getElementById('manualClockIn').value = '';
+                    document.getElementById('manualClockOut').value = '';
+                    document.getElementById('manualTitle').textContent = '📝 Ajouter une session';
+                    document.getElementById('saveBtnText').textContent = 'Ajouter';
+                }
+                updateUI();
+            } else if (e.target.id === 'saveManualBtn' || e.target.closest('#saveManualBtn')) {
+                saveManualEntry();
+            } else if (e.target.id === 'exportBtn' || e.target.closest('#exportBtn')) {
+                exportData();
+            } else if (e.target.id === 'clearBtn' || e.target.closest('#clearBtn')) {
+                clearAllData();
+            } else if (e.target.id === 'editNameBtn' || e.target.closest('#editNameBtn')) {
+                state.showSettings = !state.showSettings;
+                updateUI();
+            }
+        });
+
+        document.getElementById('nameInput').addEventListener('input', (e) => {
+            state.employeeName = e.target.value;
+            saveData();
+            updateUI();
+        });
+
+        document.getElementById('nameEditInput').addEventListener('input', (e) => {
+            state.employeeName = e.target.value;
+            saveData();
+            updateUI();
+        });
+
+        loadData();
+        updateUI();
+
+        setInterval(() => {
+            state.currentTime = new Date();
+            updateUI();
+        }, 1000);
     </script>
 </body>
 </html>
